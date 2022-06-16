@@ -1,0 +1,62 @@
+<!-- 採用Bootstrap的導覽列設計 -->
+<nav class="navbar navbar-default" style="font-family:標楷體">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <li><a id="home">資料暫存</a></li>
+                <li><a id="dataShare">dataShare</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- 使導覽列超連結可以運作之javascript codes -->
+<script>
+    // 點擊[首頁超連結]，將網頁導向網站首頁
+    var home_element = document.getElementById("home");
+    home_element.href = '/';
+    // 點擊[Web遠程監控]超連結，將網頁導向Web遠程監控服務之操作網頁
+    var page1_element = document.getElementById("dataShare");
+    page1_element.href = '/dataShare';
+
+
+
+
+</script>
+
+<!-- 裝扮導覽列顏色與超連結效果之CSS -->
+<style>
+    .navbar {
+        background-color: pink !important;
+    }
+
+    .navbar .navbar-brand {
+        color: green !important;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .navbar li a {
+        color: #0000ff !important;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .navbar-nav li a:hover,
+    .navbar-nav li.active a {
+        color: #f4511e !important;
+        background-color: #fff !important;
+    }
+
+    .navbar-default .navbar-toggle {
+        border-color: transparent;
+        color: #fff !important;
+    }
+</style>

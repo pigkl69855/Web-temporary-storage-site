@@ -1,0 +1,190 @@
+<!-- !DOCTYPE html是宣告這個網頁是基於HTML5所寫的 -->
+<!DOCTYPE html>
+<html>
+  <!-- head為網頁的表頭，通常將CSS、引用bootstrap、jquery等meta data，以及javascript函數放在表頭內 -->
+
+  <head>
+    <!-- 包含partialviews目錄下之head.ejs檔案，以載入jquery及bootstrap函數庫 -->
+    <%- include ("partialviews/head.ejs") %>
+
+    <!-- 設定網頁之標題 -->
+    <title><%= title %></title>
+    <!-- 以下這個匿名函數是jquery的ready事件處理方法，當網頁Ready好的就會自動執行 -->
+    <!-- 因此，可以把要註冊的所有事件處理函數及需要先執行的命令放在這個函數內 -->
+    <script>
+      $(function () {
+        $("#btn_upload").click(function () {
+          var imgfile = document.getElementById("id_input_uploadFile"); // 取得影像檔名稱之<input>標籤
+          var formData = new FormData();
+          formData.append("file", imgfile.files[0]);
+          console.log(imgfile.files[0]); //print test
+          var url = "/uploadFile";
+          $.ajax({
+            url: url,
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            // 监听 xhr
+            xhr: function () {
+              const xhr = $.ajaxSettings.xhr();
+              if (xhr.upload) {
+                xhr.upload.addEventListener(
+                  "progress",
+                  (e) => {
+                    const { loaded, total } = e;
+                    var progress = (loaded / total) * 100;
+                    document
+                      .querySelector("#progress")
+                      .setAttribute("value", progress);
+                  },
+                  false
+                );
+                return xhr;
+              }
+            },
+            success: function (data) {
+              console.log(data);
+              console.log("client finish");
+              location.href = "/dataShare";
+            },
+            error: function (err) {
+              console.log(err);
+            },
+          });
+        });
+
+        $(".downloadBtn").click(function () {
+          url = "/download/" + this.value;
+
+          win = window.open(url);
+        });
+
+        $(".deleteBtn").click(function () {
+          url = "/delete/" + this.value;
+
+          $.ajax({
+            url: url,
+            type: "GET",
+            success: function (data) {
+              console.log(data);
+              console.log("delete finish");
+              location.href = "/dataShare";
+            },
+            error: function (err) {
+              console.log(err);
+            },
+          });
+        });
+
+        // 回首頁
+        $("#btnhome").click(function () {
+          // 回首頁
+          window.location.href = "/";
+        });
+      });
+    </script>
+    <style>
+      input {
+        font-size: 12px;
+      }
+    </style>
+  </head>
+
+  <!-- body為網頁的內容，也就是呈現使用者介面UI的地方 -->
+
+  <body class="container" class="bg-warning" style="font-family: 標楷體">
+    <!-- 包含partialviews目錄下之navigator.ejs檔案，以載入使用bootstrap設計之導覽列 -->
+    <%- include ("partialviews/navigator.ejs") %>
+
+    <!-- 以下為操作介面UI之設計 -->
+    <div style="text-align: center">
+      <!-- 操作介面之標題 -->
+      <h3 class="bg-primary"><b>data share</b></h3>
+
+      <p id="id_serverip">server ip</p>
+
+      <div class="panel panel-default">
+        <div class="panel-heading"><b>server含有資料</b></div>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th style="text-align: center">File Name</th>
+              <th style="text-align: center">Function</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <h3 class="bg-primary"><b>上傳檔案</b></h3>
+
+      
+      <!-- 進度條 -->
+      <progress id="progress" value="0" max="100" style="width: 300px;"></progress>
+
+      <input
+        id="id_input_uploadFile"
+        type="file"
+        name="file"
+        style="margin: 0px auto; display: block"
+      />
+      
+      <br />
+      <button id="btn_upload" class="btn btn-success btn-sm">
+        <h6>上傳檔案</h6>
+      </button>
+
+      <br />
+      <br />
+
+      <!-- 回首頁之按鈕 -->
+      <button id="btnhome" class="btn btn-info btn-sm"><b>回首頁</b></button>
+    </div>
+    <script></script>
+  </body>
+</html>
+
+<script>
+  var serverip = "<%= serverip  %>";
+  var url = "http://" + serverip + ":3001/dataShare";
+  document.getElementById("id_serverip").innerHTML = url;
+
+  // 取得後端傳來資料
+  var fileListArray = [];
+  var fileList = "<%= fileList  %>";
+
+  //   string reshape to array
+  fileListArray = fileList.split(",");
+
+  //   依照資料數量輸出表格
+  if (fileListArray[0] == "") {
+    var content = `
+					<tr>
+						<th scope="row">1</th>
+						<td id="h2_text_id_position_3">no file</td>
+						<td >no file</td>
+					</tr>`;
+    $("tbody").append(content); //重新資料灌入web view
+  } else {
+    var i = 0;
+    var count = fileListArray.length;
+    while (true) {
+      var content = `
+					<tr>
+						<th scope="row">${i + 1}</th>
+						<td id="h2_text_id_position_3">${fileListArray[i]}</td>
+						<td ><button id="btn_download" value="${i}" class="downloadBtn btn btn-success btn-sm">下載</button>
+							   <button id="btn_delete" value="${i}" class="deleteBtn btn btn-danger btn-sm">刪除</button></td>
+					</tr>`;
+
+      $("tbody").append(content); //重新資料灌入web view
+      i++;
+      if (i == count) {
+        break;
+      }
+    }
+  }
+</script>

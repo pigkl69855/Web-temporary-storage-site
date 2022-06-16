@@ -1,0 +1,133 @@
+<!-- !DOCTYPE html是宣告這個網頁是基於HTML5所寫的 -->
+<!DOCTYPE html> 
+<html> 
+<!-- head為網頁的表頭，通常將CSS、引用bootstrap、jquery等meta data，以及javascript函數放在表頭內 -->
+<head>
+	<!-- 包含partialviews目錄下之head.ejs檔案，以載入jquery及bootstrap函數庫 --> 
+	<%- include ("partialviews/head.ejs") %>
+	<!-- 設定網頁之標題 -->
+	<title><%= title %></title>
+	<!-- 以下這個匿名函數是jquery的ready事件處理方法，當網頁Ready好的就會自動執行 -->
+	<!-- 因此，可以把要註冊的所有事件處理函數及需要先執行的命令放在這個函數內 -->
+	<script>
+		$(function(){
+			
+
+			$('#btn1').click(function(){
+				$.ajax({
+					url:"/save-gradeString",
+					method:"POST",
+					data:{value:$('#id_input').val()},
+					datatype:"json",
+					success: function(data){
+						$('#id_output').val(data.result);
+					}
+				});
+			});
+			$('#btn2').click(function(){
+				$.post(
+					'/show-gradeString',
+					function(data){
+						$('#id_output').val(data.result);			
+					}
+				);
+			});
+
+
+			$('#btn3').click(function(){
+				$.ajax({
+					url:"/save-gradeString",
+					method:"POST",
+					data:{value:$('#TITLE_in').val()},
+					datatype:"json",
+					success: function(data){
+						$('#TITLE_out').val(data.result);
+					}
+				});
+			});
+			$('#btn4').click(function(){
+				$.post(
+					'/show-gradeString',
+					function(data){
+						$('#TITLE_out').val(data.result);			
+					}
+				);
+			});
+
+			// 幫id為btnhome的按鈕標籤註冊了點擊事件的處理方法 
+			$('#btnhome').click(function(){
+				// 先關掉picamera，再回首頁
+				$.post(
+					'/web_video_streaming/off',
+					function(data){
+						window.location.href = '/';				
+					}
+				);
+			});
+
+		})
+	</script>
+	<style>
+		input {font-size:12px}
+	</style>
+</head>
+
+<!-- body為網頁的內容，也就是呈現使用者介面UI的地方 -->
+<body class="container" class="bg-warning" style="font-family:標楷體;">
+<!-- 包含partialviews目錄下之navigator.ejs檔案，以載入使用bootstrap設計之導覽列 -->
+<%- include ("partialviews/navigator.ejs") %>
+
+
+<!-- 以下為操作介面UI之設計 -->
+<div  style="text-align:center;">
+	<!-- 操作介面之標題 -->
+	<h3 class="bg-primary"><b>資料暫存</b> </h3>
+	
+	<p id="id_serverip">server ip</p>
+
+	<label>存放資料:</label><input id="id_input"></input>
+	<button id="btn1" class="btn btn-success btn-sm">送出</button> 
+	
+	
+	<br>
+	<br>
+	<label>暫存內容:</label><input id="id_output"></input>
+	<button id="btn2" class="btn btn-success btn-sm">顯示</button> 
+
+
+	<br><br> 
+
+
+	<br>
+	<b>存放資料:</b>
+	<br>
+	<textarea rows="5" cols="80" id="TITLE_in">
+	</textarea>
+	<button id="btn3" class="btn btn-success btn-sm">送出</button> 
+
+	<br>
+	<b>暫存內容:</b>
+	<br>
+	<textarea rows="5" cols="80" id="TITLE_out">
+	</textarea>
+	<button id="btn4" class="btn btn-success btn-sm">顯示</button> 
+	<br>
+
+
+
+
+	<!-- 回首頁之按鈕 -->
+	<button id="btnhome" class="btn btn-info btn-sm"><b>回首頁</b></button>
+</div>
+<script>
+
+	var serverip = "<%= serverip  %>";
+	var url= "http://"+serverip+":3001"
+	document.getElementById("id_serverip").innerHTML=url
+
+</script>
+</body>
+</html>
+
+
+
